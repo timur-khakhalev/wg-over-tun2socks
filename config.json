@@ -1,19 +1,11 @@
 {
-  "inbounds": [
+"inbounds": [
     {
-      "tag": "wg-in",
-      "port": 51820,
-      "protocol": "wireguard",
+      "port": 1080,
+      "protocol": "socks",
       "settings": {
-        "secretKey": "<YOUR_SERVER_PRIVATE_KEY>",
-        "address": ["10.0.0.1/24"],
-        "peers": [
-          {
-            "publicKey": "<YOUR_CLIENT_PUBLIC_KEY>",
-            "allowedIPs": ["0.0.0.0/0", "::/0"]
-          }
-        ],
-        "mtu": 1420
+        "auth": "noauth",
+        "udp": true
       }
     }
   ],
@@ -24,7 +16,7 @@
         "vnext": [
           {
             "address": "<YOUR_VLESS_IP>",
-            "port": 443,
+            "port": <YOUR_VLESS_PORT>,
             "users": [
               {
                 "id": "<YOUR_VLESS_ID>",
