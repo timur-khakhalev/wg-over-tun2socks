@@ -13,8 +13,13 @@ I wanted it too and spend some time figuring out how.
 ### Setup
 
 1) In `config.json` use the outbound corresponding to your server config (for xray reality it's public key, xray server address, sni, UUID, flow. Everything you may see in the connection string.)
-2) in `docker-compose.yml` populate env variables with your Wireguard address (server A's public IP) and your VLESS IP-address (server B's public IP)
-3) you can also use other env variables, everything that's compatible with [wg-easy](https://github.com/wg-easy/wg-easy/)
+2) Populate `.env` with the values for your environment. At minimum set:
+   - `WG_HOST` – server A's public IP address.
+   - `VLESS_IP` – server B's public IP address.
+   - `PASSWORD` – password required to access the wg-easy dashboard.
+   - `DOMAIN` – domain used for the dashboard and HTTPS.
+   - `EMAIL` – email used by Caddy for Let's Encrypt certificates.
+3) You can also use other env variables, everything that's compatible with [wg-easy](https://github.com/wg-easy/wg-easy/)
 
 > [!NOTE] 
 > Everything is configured in the way that your default interface is assumed as `eth0`. If it's not then change the source code of `start.sh` by replacing `eth0` with your interface. You can see your interfaces by calling `ip a`. Find there the inteface that actually serves internet connection, usually it has your NAT IP address and the gateway IP.
@@ -23,5 +28,5 @@ I wanted it too and spend some time figuring out how.
 ### Run
 
 Execute `docker-compose up -d`.
-If everything is correct you should be able to use wg-easy frontend and every connection will be run via VLESS tunnel.
+If everything is correct you should be able to open `https://<DOMAIN>` and log in to the wg-easy dashboard with the password from `.env`. Every connection will be run via VLESS tunnel.
 
