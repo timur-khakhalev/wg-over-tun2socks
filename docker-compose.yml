@@ -4,13 +4,13 @@ services:
         context: .
         dockerfile: Dockerfile
       environment:
-       - WG_HOST=<YOUR_PUBLIC_IP>
-       - VLESS_IP=<YOUR_VLESS_IP>
+       - WG_HOST=${WG_HOST}
+       - VLESS_IP=${VLESS_IP}
+       - PASSWORD=${PASSWORD}
       volumes:
         - .:/etc/wireguard
       ports:
       - "51820:51820/udp"
-      - "51821:51821/tcp"
       cap_add:
         - NET_ADMIN
         - SYS_MODULE
@@ -32,6 +32,28 @@ services:
     restart: unless-stopped
     networks:
       - t2s-wg
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    environment:
+      - DOMAIN=${DOMAIN}
+      - EMAIL=${EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - t2s-wg
+    depends_on:
+      - tun2socks-wg
+
+volumes:
+  caddy_data:
+  caddy_config:
 
 networks:
   t2s-wg:
