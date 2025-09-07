@@ -1,27 +1,39 @@
 # wg-over-tun2socks
 
-So let's say you want to connect via Wireguard to a server, but you want this server to actually tunnel all traffic via VLESS or any other Xray-compatible protocol.
-
-I wanted it too and spend some time figuring out how.
+This project connects incoming WireGuard clients directly to an Xray
+VLESS outbound using Xray's native `wireguard` inbound. The previous
+`tun2socks` and `wg-easy` components have been removed to reduce
+overhead.
 
 ## Instructions
 
-### Prerequisites 
-1) You need to have a server A with docker installed.
-2) You need to have a server B with running xray instance. I recommend [Marzban](https://github.com/Gozargah/Marzban).
+### Prerequisites
+1. A server with Docker installed.
+2. Credentials for a remote Xray/VLESS endpoint (public key, port, SNI,
+   etc.).
 
 ### Setup
-
-1) In `config.json` use the outbound corresponding to your server config (for xray reality it's public key, xray server address, sni, UUID, flow. Everything you may see in the connection string.)
-2) in `docker-compose.yml` populate env variables with your Wireguard address (server A's public IP) and your VLESS IP-address (server B's public IP)
-3) you can also use other env variables, everything that's compatible with [wg-easy](https://github.com/wg-easy/wg-easy/)
-
-> [!NOTE] 
-> Everything is configured in the way that your default interface is assumed as `eth0`. If it's not then change the source code of `start.sh` by replacing `eth0` with your interface. You can see your interfaces by calling `ip a`. Find there the inteface that actually serves internet connection, usually it has your NAT IP address and the gateway IP.
-
+1. Copy `.env.example` to `.env` and adjust the variables if needed. The
+   defaults use the `teddysun/xray` image, container name `xray`, and
+   expose WireGuard on UDP port `51820`.
+2. Edit `config.json`:
+   - replace `"<YOUR_SERVER_PRIVATE_KEY>"` with the WireGuard private key
+     for this server.
+   - replace `"<YOUR_CLIENT_PUBLIC_KEY>"` with the public key for a client
+     allowed to connect.
+   - fill in the VLESS outbound placeholders (`<YOUR_VLESS_IP>`, port,
+     UUID, flow, public key, short ID and server name) with the values
+     from your Xray server.
+3. `docker-compose.yml` exposes the UDP port defined by `WG_PORT` for
+   WireGuard (default `51820`). Adjust if necessary and add more peers in
+   `config.json` as required.
 
 ### Run
 
-Execute `docker-compose up -d`.
-If everything is correct you should be able to use wg-easy frontend and every connection will be run via VLESS tunnel.
+```bash
+docker compose up -d
+```
 
+If everything is configured correctly, WireGuard clients connecting to
+this server will have their traffic forwarded through the specified
+VLESS tunnel.
