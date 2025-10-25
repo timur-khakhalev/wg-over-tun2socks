@@ -1,0 +1,4 @@
+{$DOMAIN} {
+    tls {$EMAIL}
+    reverse_proxy tun2socks-wg:51821
+}
